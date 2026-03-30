@@ -4,225 +4,745 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xget - 开发者资源加速引擎</title>
+    <!-- 引入 QRCode.js 用于生成二维码 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
+        /* ========== 全局变量与主题配置 ========== */
+        :root {
+            --primary-color: #0071e3;
+            --primary-hover: #0077ed;
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --border-color: #d2d2d7;
+            --success-color: #34c759;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #2997ff;
+            --primary-hover: #40a9ff;
+            --bg-color: #000000;
+            --card-bg: #1c1c1e;
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --border-color: #38383a;
+            --shadow: 0 2px 12px rgba(0,0,0,0.3);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
         }
+
         body {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            background: #f5f5f5;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            transition: background 0.3s, color 0.3s;
         }
+
         .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .input-group {
-            margin-bottom: 1.5rem;
+
+        /* ========== 头部样式 ========== */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
-        input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), #5ac8fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
         }
-        button {
-            padding: 0.8rem 1.5rem;
-            background: #0071e3;
-            color: white;
-            border: none;
-            border-radius: 4px;
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* ========== 主题切换按钮 ========== */
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            font-size: 1.5rem;
+        }
+
+        .theme-toggle:hover {
+            box-shadow: var(--shadow-hover);
+            transform: scale(1.05);
+        }
+
+        /* ========== 卡片样式 ========== */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            transition: box-shadow 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ========== 平台标签页 ========== */
+        .platform-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .platform-tab {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .platform-tab:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .platform-tab.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        /* ========== 输入区域 ========== */
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             font-size: 1rem;
-            margin-right: 0.5rem;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            transition: all 0.3s;
         }
-        button:hover {
-            background: #0077ed;
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,113,227,0.1);
         }
+
+        /* ========== 按钮样式 ========== */
+        .btn-group {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.9rem 1.8rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #30b353;
+            transform: translateY(-1px);
+        }
+
+        /* ========== 结果区域 ========== */
+        .result-group {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .result-group.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-input {
+            background: var(--bg-color);
+            margin-bottom: 1rem;
+        }
+
+        /* ========== 二维码区域 ========== */
+        .qr-section {
+            margin-top: 1.5rem;
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg-color);
+            border-radius: 10px;
+        }
+
+        #qrcode {
+            display: inline-block;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+        }
+
+        /* ========== 历史记录区域 ========== */
         .history-section {
-            margin-top: 2rem;
-            border-top: 1px solid #eee;
-            padding-top: 2rem;
+            margin-top: 1.5rem;
         }
-        .history-list {
-            margin-top: 1rem;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .history-item {
-            padding: 0.8rem;
-            border-bottom: 1px solid #eee;
+
+        .history-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 1rem;
         }
+
+        .history-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn-clear {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            background: transparent;
+            color: #ff3b30;
+            border: 1px solid #ff3b30;
+        }
+
+        .btn-clear:hover {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: background 0.2s;
+        }
+
+        .history-item:hover {
+            background: var(--bg-color);
+        }
+
         .history-item:last-child {
             border-bottom: none;
         }
+
+        .history-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .history-url {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            word-break: break-all;
+            margin-bottom: 0.3rem;
+        }
+
         .history-meta {
-            color: #666;
             font-size: 0.85rem;
-            margin-top: 0.3rem;
+            color: var(--text-secondary);
         }
+
+        .history-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            min-width: auto;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
         .empty-history {
-            color: #999;
-            padding: 2rem;
             text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
         }
-        .btn-clear {
-            background: #ff3b30;
+
+        /* ========== 使用说明 ========== */
+        .tips-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(0,113,227,0.05), rgba(90,200,250,0.05));
+            border-radius: 10px;
+            border: 1px solid rgba(0,113,227,0.1);
         }
-        .btn-clear:hover {
-            background: #ff453a;
+
+        .tips-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .tips-list {
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .tips-list li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        /* ========== 响应式适配 ========== */
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+                border-radius: 12px;
+            }
+
+            .platform-tabs {
+                flex-wrap: wrap;
+            }
+
+            .theme-toggle {
+                top: 1rem;
+                right: 1rem;
+                width: 44px;
+                height: 44px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .history-item {
+                flex-direction: column;
+            }
+
+            .history-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>
+
     <div class="container">
-        <h1>Xget 资源加速</h1>
-        
-        <!-- 核心输入区域 -->
-        <div class="input-group">
-            <input type="text" id="resourceUrl" placeholder="输入需要加速的资源URL (例如: gh/username/repo)"/>
-            <button id="accelerateBtn">加速访问</button>
+        <!-- 头部 -->
+        <header>
+            <div class="logo">Xget</div>
+            <p class="subtitle">高性能开发者资源加速引擎</p>
+        </header>
+
+        <!-- 主功能卡片 -->
+        <div class="card">
+            <!-- 平台标签页 -->
+            <div class="platform-tabs">
+                <button class="platform-tab active" data-platform="gh" data-base="https://github.com">GitHub</button>
+                <button class="platform-tab" data-platform="gl" data-base="https://gitlab.com">GitLab</button>
+                <button class="platform-tab" data-platform="hf" data-base="https://huggingface.co">Hugging Face</button>
+                <button class="platform-tab" data-platform="custom" data-base="">自定义URL</button>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="input-group">
+                <label id="inputLabel">输入 GitHub 仓库路径（如：xixu-me/Xget）</label>
+                <input type="text" id="resourceInput" placeholder="例如：xixu-me/Xget 或完整 URL">
+            </div>
+
+            <!-- 按钮组 -->
+            <div class="btn-group">
+                <button class="btn-primary" id="generateBtn">生成加速链接</button>
+                <button class="btn-secondary" id="clearBtn">清空</button>
+            </div>
+
+            <!-- 结果区域 -->
+            <div class="result-group" id="resultGroup">
+                <div class="input-group">
+                    <label>加速链接</label>
+                    <input type="text" id="acceleratedUrl" class="result-input" readonly>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-success" id="copyBtn">复制链接</button>
+                    <button class="btn-secondary" id="qrBtn">显示二维码</button>
+                </div>
+                <div class="qr-section" id="qrSection" style="display: none;">
+                    <div id="qrcode"></div>
+                    <p style="margin-top: 0.8rem; color: var(--text-secondary); font-size: 0.9rem;">手机扫码访问</p>
+                </div>
+            </div>
         </div>
 
-        <!-- 历史记录区域 -->
-        <div class="history-section">
-            <h2>访问历史</h2>
-            <button id="clearHistoryBtn" class="btn-clear">清空历史</button>
-            <div id="historyList" class="history-list">
-                <div class="empty-history">暂无访问记录</div>
+        <!-- 历史记录卡片 -->
+        <div class="card history-section">
+            <div class="history-header">
+                <span class="history-title">📋 生成历史</span>
+                <button class="btn-clear" id="clearHistoryBtn">清空历史</button>
             </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-history">暂无生成记录</div>
+            </div>
+        </div>
+
+        <!-- 使用说明卡片 -->
+        <div class="card tips-section">
+            <div class="tips-title">💡 使用说明</div>
+            <ul class="tips-list">
+                <li><strong>GitHub/GitLab/Hugging Face：</strong>选择对应平台，输入仓库/模型路径（如：xixu-me/Xget），自动生成短前缀加速链接</li>
+                <li><strong>自定义URL：</strong>选择「自定义URL」，直接输入完整的目标资源URL（如：https://github.com/xixu-me/Xget）</li>
+                <li><strong>Git 克隆加速：</strong>生成链接后，直接用 `git clone [加速链接]` 即可</li>
+                <li><strong>历史记录：</strong>自动保存最近 20 条生成记录，支持一键复制和管理</li>
+            </ul>
         </div>
     </div>
 
     <script>
-        // 存储历史记录的Key
-        const HISTORY_STORAGE_KEY = 'xget_access_history';
+        // ========== 全局变量 ==========
+        const BASE_DOMAIN = 'https://xget.678870.xyz';
+        const HISTORY_KEY = 'xget_history';
+        const MAX_HISTORY = 20;
+        let currentPlatform = 'gh';
+        let currentBaseUrl = 'https://github.com';
 
-        // 初始化页面
+        // ========== 初始化 ==========
         document.addEventListener('DOMContentLoaded', () => {
-            renderHistoryList();
-            bindEventListeners();
+            initTheme();
+            bindEvents();
+            renderHistory();
         });
 
-        /**
-         * 绑定所有事件监听
-         */
-        function bindEventListeners() {
-            // 加速按钮点击
-            document.getElementById('accelerateBtn').addEventListener('click', handleAccelerate);
-            // 清空历史按钮点击
-            document.getElementById('clearHistoryBtn').addEventListener('click', clearAllHistory);
-            // 回车触发加速
-            document.getElementById('resourceUrl').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') handleAccelerate();
-            });
+        // ========== 主题管理 ==========
+        function initTheme() {
+            const savedTheme = localStorage.getItem('xget_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
         }
 
-        /**
-         * 处理加速请求逻辑
-         */
-        function handleAccelerate() {
-            const inputEl = document.getElementById('resourceUrl');
-            const url = inputEl.value.trim();
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('xget_theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // ========== 事件绑定 ==========
+        function bindEvents() {
+            // 平台标签页切换
+            document.querySelectorAll('.platform-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchPlatform(tab));
+            });
+
+            // 生成按钮
+            document.getElementById('generateBtn').addEventListener('click', generateUrl);
             
-            if (!url) {
-                alert('请输入有效的资源URL！');
+            // 清空按钮
+            document.getElementById('clearBtn').addEventListener('click', clearInput);
+            
+            // 复制按钮
+            document.getElementById('copyBtn').addEventListener('click', copyUrl);
+            
+            // 二维码按钮
+            document.getElementById('qrBtn').addEventListener('click', toggleQRCode);
+            
+            // 清空历史
+            document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
+            
+            // 回车生成
+            document.getElementById('resourceInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') generateUrl();
+            });
+
+            // 主题切换
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        }
+
+        // ========== 平台切换 ==========
+        function switchPlatform(tab) {
+            // 更新标签页状态
+            document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // 更新当前平台信息
+            currentPlatform = tab.dataset.platform;
+            currentBaseUrl = tab.dataset.base;
+
+            // 更新输入框提示
+            const inputLabel = document.getElementById('inputLabel');
+            const input = document.getElementById('resourceInput');
+            
+            if (currentPlatform === 'gh') {
+                inputLabel.textContent = '输入 GitHub 仓库路径（如：xixu-me/Xget）';
+                input.placeholder = '例如：xixu-me/Xget';
+            } else if (currentPlatform === 'gl') {
+                inputLabel.textContent = '输入 GitLab 仓库路径（如：gitlab-com/gitlab-com-infrastructure）';
+                input.placeholder = '例如：gitlab-com/gitlab-com-infrastructure';
+            } else if (currentPlatform === 'hf') {
+                inputLabel.textContent = '输入 Hugging Face 模型路径（如：bert-base-uncased）';
+                input.placeholder = '例如：bert-base-uncased';
+            } else {
+                inputLabel.textContent = '输入完整的目标资源 URL';
+                input.placeholder = '例如：https://github.com/xixu-me/Xget';
+            }
+
+            // 清空输入和结果
+            clearInput();
+        }
+
+        // ========== 生成加速链接 ==========
+        function generateUrl() {
+            const input = document.getElementById('resourceInput').value.trim();
+            if (!input) {
+                alert('请输入需要加速的资源路径或URL');
                 return;
             }
 
-            // 1. 记录历史（实际场景可替换为真实的加速逻辑）
-            addHistoryRecord({
-                url: url,
-                timestamp: new Date().toLocaleString(),
-                status: 'success' // 实际场景根据请求结果修改
+            let acceleratedUrl = '';
+
+            if (currentPlatform === 'custom') {
+                // 自定义URL：直接拼接
+                let url = input;
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                acceleratedUrl = `${BASE_DOMAIN}/${url}`;
+            } else {
+                // 平台短前缀：/gh/ /gl/ /hf/
+                let path = input;
+                // 如果用户输入了完整URL，提取路径
+                if (path.startsWith('http://') || path.startsWith('https://')) {
+                    try {
+                        const parsedUrl = new URL(path);
+                        path = parsedUrl.pathname;
+                        if (path.startsWith('/')) path = path.substring(1);
+                    } catch (e) {
+                        // 解析失败，直接用原输入
+                    }
+                }
+                // 去掉开头的斜杠
+                if (path.startsWith('/')) path = path.substring(1);
+                acceleratedUrl = `${BASE_DOMAIN}/${currentPlatform}/${path}`;
+            }
+
+            // 显示结果
+            document.getElementById('acceleratedUrl').value = acceleratedUrl;
+            document.getElementById('resultGroup').classList.add('show');
+            document.getElementById('qrSection').style.display = 'none';
+            document.getElementById('qrcode').innerHTML = '';
+
+            // 保存历史
+            saveHistory(input, acceleratedUrl);
+        }
+
+        // ========== 历史记录管理 ==========
+        function saveHistory(origin, accelerated) {
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            // 去重：如果已存在相同记录，移到顶部
+            history = history.filter(item => item.accelerated !== accelerated);
+            history.unshift({
+                origin: origin,
+                accelerated: accelerated,
+                platform: currentPlatform,
+                time: new Date().toLocaleString()
             });
-
-            // 2. 模拟加速跳转（实际场景替换为真实的Xget后端接口）
-            alert(`已为您加速访问: ${url}\n（实际场景将跳转至加速后的URL）`);
-            
-            // 3. 清空输入框
-            inputEl.value = '';
+            // 限制数量
+            history = history.slice(0, MAX_HISTORY);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            renderHistory();
         }
 
-        /**
-         * 添加历史记录到本地存储
-         * @param {Object} record - 历史记录项 { url, timestamp, status }
-         */
-        function addHistoryRecord(record) {
-            // 获取现有历史
-            const history = getHistoryList();
-            // 添加新记录（插入到顶部）
-            history.unshift(record);
-            // 存储回本地
-            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
-            // 重新渲染列表
-            renderHistoryList();
-        }
-
-        /**
-         * 从本地存储获取历史记录列表
-         * @returns {Array} 历史记录数组
-         */
-        function getHistoryList() {
-            const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
-            return raw ? JSON.parse(raw) : [];
-        }
-
-        /**
-         * 渲染历史记录列表到页面
-         */
-        function renderHistoryList() {
-            const historyList = getHistoryList();
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
             const listEl = document.getElementById('historyList');
-            
-            // 无记录时显示占位
-            if (historyList.length === 0) {
-                listEl.innerHTML = '<div class="empty-history">暂无访问记录</div>';
+
+            if (history.length === 0) {
+                listEl.innerHTML = '<div class="empty-history">暂无生成记录</div>';
                 return;
             }
 
-            // 渲染记录项
-            listEl.innerHTML = historyList.map((item, index) => `
+            listEl.innerHTML = history.map((item, index) => `
                 <div class="history-item">
-                    <div>
-                        <div>${item.url}</div>
+                    <div class="history-content">
+                        <div class="history-url">${item.accelerated}</div>
                         <div class="history-meta">
-                            ${item.timestamp} | 状态: ${item.status}
+                            原始：${item.origin} | ${item.time}
                         </div>
                     </div>
-                    <button onclick="removeHistoryItem(${index})">删除</button>
+                    <div class="history-actions">
+                        <button class="btn-icon" onclick="copyHistoryUrl(${index})">复制</button>
+                        <button class="btn-icon" onclick="deleteHistoryItem(${index})">删除</button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        /**
-         * 删除单条历史记录
-         * @param {number} index - 记录索引
-         */
-        function removeHistoryItem(index) {
-            const history = getHistoryList();
-            history.splice(index, 1);
-            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
-            renderHistoryList();
+        function copyHistoryUrl(index) {
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            if (history[index]) {
+                navigator.clipboard.writeText(history[index].accelerated).then(() => {
+                    alert('链接已复制到剪贴板');
+                });
+            }
         }
 
-        /**
-         * 清空所有历史记录
-         */
-        function clearAllHistory() {
-            if (confirm('确定要清空所有访问历史吗？')) {
-                localStorage.removeItem(HISTORY_STORAGE_KEY);
-                renderHistoryList();
+        function deleteHistoryItem(index) {
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            history.splice(index, 1);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            renderHistory();
+        }
+
+        function clearHistory() {
+            if (confirm('确定要清空所有生成历史吗？')) {
+                localStorage.removeItem(HISTORY_KEY);
+                renderHistory();
+            }
+        }
+
+        // ========== 辅助功能 ==========
+        function clearInput() {
+            document.getElementById('resourceInput').value = '';
+            document.getElementById('resultGroup').classList.remove('show');
+            document.getElementById('qrSection').style.display = 'none';
+            document.getElementById('qrcode').innerHTML = '';
+        }
+
+        function copyUrl() {
+            const input = document.getElementById('acceleratedUrl');
+            input.select();
+            document.execCommand('copy');
+            alert('链接已复制到剪贴板');
+        }
+
+        function toggleQRCode() {
+            const qrSection = document.getElementById('qrSection');
+            const qrCodeEl = document.getElementById('qrcode');
+            const url = document.getElementById('acceleratedUrl').value;
+
+            if (qrSection.style.display === 'none') {
+                // 生成二维码
+                qrCodeEl.innerHTML = '';
+                QRCode.toCanvas(document.createElement('canvas'), url, { width: 180, margin: 2 }, (error, canvas) => {
+                    if (error) {
+                        console.error(error);
+                        alert('二维码生成失败');
+                        return;
+                    }
+                    qrCodeEl.appendChild(canvas);
+                    qrSection.style.display = 'block';
+                });
+            } else {
+                qrSection.style.display = 'none';
             }
         }
     </script>
