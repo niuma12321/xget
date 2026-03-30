@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xget - 开发者资源加速引擎</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            padding: 0.8rem 1.5rem;
+            background: #0071e3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
+        button:hover {
+            background: #0077ed;
+        }
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+            padding-top: 2rem;
+        }
+        .history-list {
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .history-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-meta {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+        .empty-history {
+            color: #999;
+            padding: 2rem;
+            text-align: center;
+        }
+        .btn-clear {
+            background: #ff3b30;
+        }
+        .btn-clear:hover {
+            background: #ff453a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Xget 资源加速</h1>
+        
+        <!-- 核心输入区域 -->
+        <div class="input-group">
+            <input type="text" id="resourceUrl" placeholder="输入需要加速的资源URL (例如: gh/username/repo)"/>
+            <button id="accelerateBtn">加速访问</button>
+        </div>
+
+        <!-- 历史记录区域 -->
+        <div class="history-section">
+            <h2>访问历史</h2>
+            <button id="clearHistoryBtn" class="btn-clear">清空历史</button>
+            <div id="historyList" class="history-list">
+                <div class="empty-history">暂无访问记录</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 存储历史记录的Key
+        const HISTORY_STORAGE_KEY = 'xget_access_history';
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            renderHistoryList();
+            bindEventListeners();
+        });
+
+        /**
+         * 绑定所有事件监听
+         */
+        function bindEventListeners() {
+            // 加速按钮点击
+            document.getElementById('accelerateBtn').addEventListener('click', handleAccelerate);
+            // 清空历史按钮点击
+            document.getElementById('clearHistoryBtn').addEventListener('click', clearAllHistory);
+            // 回车触发加速
+            document.getElementById('resourceUrl').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleAccelerate();
+            });
+        }
+
+        /**
+         * 处理加速请求逻辑
+         */
+        function handleAccelerate() {
+            const inputEl = document.getElementById('resourceUrl');
+            const url = inputEl.value.trim();
+            
+            if (!url) {
+                alert('请输入有效的资源URL！');
+                return;
+            }
+
+            // 1. 记录历史（实际场景可替换为真实的加速逻辑）
+            addHistoryRecord({
+                url: url,
+                timestamp: new Date().toLocaleString(),
+                status: 'success' // 实际场景根据请求结果修改
+            });
+
+            // 2. 模拟加速跳转（实际场景替换为真实的Xget后端接口）
+            alert(`已为您加速访问: ${url}\n（实际场景将跳转至加速后的URL）`);
+            
+            // 3. 清空输入框
+            inputEl.value = '';
+        }
+
+        /**
+         * 添加历史记录到本地存储
+         * @param {Object} record - 历史记录项 { url, timestamp, status }
+         */
+        function addHistoryRecord(record) {
+            // 获取现有历史
+            const history = getHistoryList();
+            // 添加新记录（插入到顶部）
+            history.unshift(record);
+            // 存储回本地
+            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+            // 重新渲染列表
+            renderHistoryList();
+        }
+
+        /**
+         * 从本地存储获取历史记录列表
+         * @returns {Array} 历史记录数组
+         */
+        function getHistoryList() {
+            const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+        }
+
+        /**
+         * 渲染历史记录列表到页面
+         */
+        function renderHistoryList() {
+            const historyList = getHistoryList();
+            const listEl = document.getElementById('historyList');
+            
+            // 无记录时显示占位
+            if (historyList.length === 0) {
+                listEl.innerHTML = '<div class="empty-history">暂无访问记录</div>';
+                return;
+            }
+
+            // 渲染记录项
+            listEl.innerHTML = historyList.map((item, index) => `
+                <div class="history-item">
+                    <div>
+                        <div>${item.url}</div>
+                        <div class="history-meta">
+                            ${item.timestamp} | 状态: ${item.status}
+                        </div>
+                    </div>
+                    <button onclick="removeHistoryItem(${index})">删除</button>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * 删除单条历史记录
+         * @param {number} index - 记录索引
+         */
+        function removeHistoryItem(index) {
+            const history = getHistoryList();
+            history.splice(index, 1);
+            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+            renderHistoryList();
+        }
+
+        /**
+         * 清空所有历史记录
+         */
+        function clearAllHistory() {
+            if (confirm('确定要清空所有访问历史吗？')) {
+                localStorage.removeItem(HISTORY_STORAGE_KEY);
+                renderHistoryList();
+            }
+        }
+    </script>
+</body>
+</html>
