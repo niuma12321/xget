@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xget - 开发者资源加速引擎</title>
-    <!-- 引入 QRCode.js 用于生成二维码 -->
+    <title>Xget - 全平台开发者资源加速引擎</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
-        /* ========== 全局变量与主题配置 ========== */
+        /* ========== 全局变量与主题 ========== */
         :root {
-            --primary-color: #0071e3;
+            --primary: #0071e3;
             --primary-hover: #0077ed;
-            --bg-color: #f5f5f7;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --bg: #f5f5f7;
             --card-bg: #ffffff;
-            --text-primary: #1d1d1f;
+            --text: #1d1d1f;
             --text-secondary: #6e6e73;
-            --border-color: #d2d2d7;
-            --success-color: #34c759;
+            --border: #d2d2d7;
             --shadow: 0 2px 12px rgba(0,0,0,0.08);
             --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
         }
 
         [data-theme="dark"] {
-            --primary-color: #2997ff;
+            --primary: #2997ff;
             --primary-hover: #40a9ff;
-            --bg-color: #000000;
+            --bg: #000000;
             --card-bg: #1c1c1e;
-            --text-primary: #f5f5f7;
+            --text: #f5f5f7;
             --text-secondary: #86868b;
-            --border-color: #38383a;
+            --border: #38383a;
             --shadow: 0 2px 12px rgba(0,0,0,0.3);
             --shadow-hover: 0 4px 20px rgba(0,0,0,0.4);
         }
@@ -41,28 +42,28 @@
         }
 
         body {
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             padding: 2rem 1rem;
-            transition: background 0.3s, color 0.3s;
+            transition: all 0.3s;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
-        /* ========== 头部样式 ========== */
+        /* ========== 头部 ========== */
         header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .logo {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color), #5ac8fa);
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #5ac8fa, #34c759);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -74,31 +75,31 @@
             font-size: 1.1rem;
         }
 
-        /* ========== 主题切换按钮 ========== */
-        .theme-toggle {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            cursor: pointer;
+        /* ========== 工具栏 ========== */
+        .toolbar {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
             transition: all 0.3s;
-            font-size: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text);
         }
 
-        .theme-toggle:hover {
-            box-shadow: var(--shadow-hover);
-            transform: scale(1.05);
+        .tool-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
-        /* ========== 卡片样式 ========== */
+        /* ========== 卡片 ========== */
         .card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -112,35 +113,53 @@
             box-shadow: var(--shadow-hover);
         }
 
-        /* ========== 平台标签页 ========== */
-        .platform-tabs {
-            display: flex;
-            gap: 0.5rem;
+        /* ========== 平台选择器 ========== */
+        .platform-section {
             margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
         }
 
-        .platform-tab {
-            padding: 0.6rem 1.2rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s;
+        .platform-label {
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: block;
             font-size: 0.95rem;
         }
 
-        .platform-tab:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.6rem;
+            margin-bottom: 1rem;
         }
 
-        .platform-tab.active {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
+        .platform-btn {
+            padding: 0.7rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            color: var(--text);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .platform-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .platform-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
             color: white;
+        }
+
+        .platform-icon {
+            font-size: 1.1rem;
         }
 
         /* ========== 输入区域 ========== */
@@ -148,32 +167,43 @@
             margin-bottom: 1.2rem;
         }
 
-        label {
-            display: block;
+        .input-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 0.5rem;
-            color: var(--text-primary);
+        }
+
+        .input-label span {
             font-weight: 500;
             font-size: 0.95rem;
         }
 
+        .format-toggle {
+            font-size: 0.85rem;
+            color: var(--primary);
+            cursor: pointer;
+            user-select: none;
+        }
+
         input[type="text"] {
             width: 100%;
-            padding: 0.9rem 1.2rem;
-            border: 1px solid var(--border-color);
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--border);
             border-radius: 10px;
             font-size: 1rem;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--bg);
+            color: var(--text);
             transition: all 0.3s;
         }
 
         input[type="text"]:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(0,113,227,0.1);
         }
 
-        /* ========== 按钮样式 ========== */
+        /* ========== 按钮组 ========== */
         .btn-group {
             display: flex;
             gap: 0.8rem;
@@ -181,7 +211,7 @@
         }
 
         button {
-            padding: 0.9rem 1.8rem;
+            padding: 0.9rem 1.5rem;
             border: none;
             border-radius: 10px;
             font-size: 1rem;
@@ -193,7 +223,7 @@
         }
 
         .btn-primary {
-            background: var(--primary-color);
+            background: var(--primary);
             color: white;
         }
 
@@ -203,31 +233,21 @@
         }
 
         .btn-secondary {
-            background: var(--bg-color);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .btn-success {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #30b353;
-            transform: translateY(-1px);
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         /* ========== 结果区域 ========== */
         .result-group {
             margin-top: 1.5rem;
             padding-top: 1.5rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
             display: none;
         }
 
@@ -242,36 +262,49 @@
         }
 
         .result-input {
-            background: var(--bg-color);
+            background: var(--bg);
             margin-bottom: 1rem;
         }
 
-        /* ========== 二维码区域 ========== */
-        .qr-section {
-            margin-top: 1.5rem;
-            text-align: center;
-            padding: 1.5rem;
-            background: var(--bg-color);
-            border-radius: 10px;
+        /* ========== 快捷操作面板 ========== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.6rem;
+            margin-top: 1rem;
         }
 
-        #qrcode {
-            display: inline-block;
-            padding: 1rem;
-            background: white;
+        .action-btn {
+            padding: 0.7rem 0.9rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-align: center;
         }
 
-        /* ========== 历史记录区域 ========== */
-        .history-section {
-            margin-top: 1.5rem;
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
         }
 
+        .action-btn.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        /* ========== 历史记录 ========== */
         .history-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
         }
 
         .history-title {
@@ -279,40 +312,46 @@
             font-weight: 600;
         }
 
-        .btn-clear {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            background: transparent;
-            color: #ff3b30;
-            border: 1px solid #ff3b30;
+        .history-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
         }
 
-        .btn-clear:hover {
-            background: #ff3b30;
-            color: white;
+        .search-input {
+            padding: 0.5rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: var(--bg);
+            color: var(--text);
+            width: 180px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
         .history-list {
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
         }
 
         .history-item {
             padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
             gap: 1rem;
             transition: background 0.2s;
         }
 
         .history-item:hover {
-            background: var(--bg-color);
+            background: var(--bg);
         }
 
-        .history-item:last-child {
-            border-bottom: none;
+        .history-checkbox {
+            margin-top: 0.2rem;
         }
 
         .history-content {
@@ -322,76 +361,83 @@
 
         .history-url {
             font-size: 0.95rem;
-            color: var(--text-primary);
             word-break: break-all;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.4rem;
+            color: var(--text);
         }
 
         .history-meta {
             font-size: 0.85rem;
             color: var(--text-secondary);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .history-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
+            flex-wrap: wrap;
         }
 
-        .btn-icon {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
+        .mini-btn {
+            padding: 0.3rem 0.7rem;
+            font-size: 0.8rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
             border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
             min-width: auto;
         }
 
-        .btn-icon:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+        .mini-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .empty-history {
             text-align: center;
-            padding: 2rem;
+            padding: 2.5rem;
             color: var(--text-secondary);
         }
 
         /* ========== 使用说明 ========== */
-        .tips-section {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .tip-card {
+            padding: 1rem;
             background: linear-gradient(135deg, rgba(0,113,227,0.05), rgba(90,200,250,0.05));
             border-radius: 10px;
             border: 1px solid rgba(0,113,227,0.1);
         }
 
-        .tips-title {
-            font-size: 1.1rem;
+        .tip-title {
             font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-        }
-
-        .tips-list {
-            padding-left: 1.5rem;
-            color: var(--text-secondary);
-        }
-
-        .tips-list li {
             margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .tip-content {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
             line-height: 1.6;
         }
 
-        /* ========== 响应式适配 ========== */
-        @media (max-width: 600px) {
+        /* ========== 响应式 ========== */
+        @media (max-width: 768px) {
             body {
                 padding: 1rem 0.5rem;
             }
 
             .logo {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
 
             .card {
@@ -399,23 +445,12 @@
                 border-radius: 12px;
             }
 
-            .platform-tabs {
-                flex-wrap: wrap;
+            .platform-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
 
-            .theme-toggle {
-                top: 1rem;
-                right: 1rem;
-                width: 44px;
-                height: 44px;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
+            .search-input {
+                width: 140px;
             }
 
             .history-item {
@@ -424,41 +459,46 @@
 
             .history-actions {
                 width: 100%;
-                justify-content: flex-end;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 主题切换按钮 -->
-    <button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>
-
     <div class="container">
         <!-- 头部 -->
         <header>
             <div class="logo">Xget</div>
-            <p class="subtitle">高性能开发者资源加速引擎</p>
+            <p class="subtitle">全平台开发者资源加速引擎</p>
         </header>
+
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <button class="tool-btn" id="themeToggle" title="切换主题">🌙</button>
+            <button class="tool-btn" id="exportHistory" title="导出历史">📤 导出</button>
+        </div>
 
         <!-- 主功能卡片 -->
         <div class="card">
-            <!-- 平台标签页 -->
-            <div class="platform-tabs">
-                <button class="platform-tab active" data-platform="gh" data-base="https://github.com">GitHub</button>
-                <button class="platform-tab" data-platform="gl" data-base="https://gitlab.com">GitLab</button>
-                <button class="platform-tab" data-platform="hf" data-base="https://huggingface.co">Hugging Face</button>
-                <button class="platform-tab" data-platform="custom" data-base="">自定义URL</button>
+            <!-- 平台选择 -->
+            <div class="platform-section">
+                <label class="platform-label">选择平台</label>
+                <div class="platform-grid" id="platformGrid">
+                    <!-- 平台按钮将通过JS动态生成 -->
+                </div>
             </div>
 
             <!-- 输入区域 -->
             <div class="input-group">
-                <label id="inputLabel">输入 GitHub 仓库路径（如：xixu-me/Xget）</label>
-                <input type="text" id="resourceInput" placeholder="例如：xixu-me/Xget 或完整 URL">
+                <div class="input-label">
+                    <span id="inputLabel">输入资源路径</span>
+                    <span class="format-toggle" id="formatToggle">切换格式</span>
+                </div>
+                <input type="text" id="resourceInput" placeholder="选择平台后输入...">
             </div>
 
             <!-- 按钮组 -->
             <div class="btn-group">
-                <button class="btn-primary" id="generateBtn">生成加速链接</button>
+                <button class="btn-primary" id="generateBtn">🚀 生成加速链接</button>
                 <button class="btn-secondary" id="clearBtn">清空</button>
             </div>
 
@@ -468,22 +508,22 @@
                     <label>加速链接</label>
                     <input type="text" id="acceleratedUrl" class="result-input" readonly>
                 </div>
-                <div class="btn-group">
-                    <button class="btn-success" id="copyBtn">复制链接</button>
-                    <button class="btn-secondary" id="qrBtn">显示二维码</button>
-                </div>
-                <div class="qr-section" id="qrSection" style="display: none;">
-                    <div id="qrcode"></div>
-                    <p style="margin-top: 0.8rem; color: var(--text-secondary); font-size: 0.9rem;">手机扫码访问</p>
+                <div class="quick-actions" id="quickActions">
+                    <!-- 快捷操作按钮将通过JS动态生成 -->
                 </div>
             </div>
         </div>
 
         <!-- 历史记录卡片 -->
-        <div class="card history-section">
+        <div class="card">
             <div class="history-header">
                 <span class="history-title">📋 生成历史</span>
-                <button class="btn-clear" id="clearHistoryBtn">清空历史</button>
+                <div class="history-controls">
+                    <input type="text" class="search-input" id="searchHistory" placeholder="搜索历史...">
+                    <button class="tool-btn" id="selectAllBtn">全选</button>
+                    <button class="tool-btn" id="batchCopyBtn">批量复制</button>
+                    <button class="tool-btn" id="clearHistoryBtn" style="color: var(--danger); border-color: var(--danger);">清空</button>
+                </div>
             </div>
             <div class="history-list" id="historyList">
                 <div class="empty-history">暂无生成记录</div>
@@ -491,259 +531,469 @@
         </div>
 
         <!-- 使用说明卡片 -->
-        <div class="card tips-section">
-            <div class="tips-title">💡 使用说明</div>
-            <ul class="tips-list">
-                <li><strong>GitHub/GitLab/Hugging Face：</strong>选择对应平台，输入仓库/模型路径（如：xixu-me/Xget），自动生成短前缀加速链接</li>
-                <li><strong>自定义URL：</strong>选择「自定义URL」，直接输入完整的目标资源URL（如：https://github.com/xixu-me/Xget）</li>
-                <li><strong>Git 克隆加速：</strong>生成链接后，直接用 `git clone [加速链接]` 即可</li>
-                <li><strong>历史记录：</strong>自动保存最近 20 条生成记录，支持一键复制和管理</li>
-            </ul>
+        <div class="card">
+            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">💡 快速上⼿</div>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-title">GitHub/GitLab</div>
+                    <div class="tip-content">选择平台后输入仓库路径，如：<code>xixu-me/Xget</code>，自动生成短前缀链接</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-title">Docker 镜像</div>
+                    <div class="tip-content">选择 Docker 平台，输入镜像名，如：<code>library/nginx</code>，复制 pull 命令直接使用</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-title">PyPI/npm</div>
+                    <div class="tip-content">选择包管理器平台，复制配置命令，一键设置镜像源</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-title">AI API</div>
+                    <div class="tip-content">选择 AI 平台，复制 base_url，在代码中替换即可加速 API 调用</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // ========== 全局变量 ==========
+        // ========== 配置 ==========
         const BASE_DOMAIN = 'https://xget.678870.xyz';
-        const HISTORY_KEY = 'xget_history';
-        const MAX_HISTORY = 20;
-        let currentPlatform = 'gh';
-        let currentBaseUrl = 'https://github.com';
+        const HISTORY_KEY = 'xget_history_v2';
+        const MAX_HISTORY = 50;
+        const THEME_KEY = 'xget_theme';
+
+        // ========== 平台定义（完整覆盖） ==========
+        const PLATFORMS = [
+            // 代码托管
+            { id: 'gh', name: 'GitHub', icon: '🐙', prefix: 'gh', base: 'https://github.com', placeholder: 'xixu-me/Xget', type: 'code' },
+            { id: 'gl', name: 'GitLab', icon: '🔬', prefix: 'gl', base: 'https://gitlab.com', placeholder: 'gitlab-com/gitlab-com-infrastructure', type: 'code' },
+            { id: 'gist', name: 'Gist', icon: '📝', prefix: 'gist', base: 'https://gist.github.com', placeholder: 'xixu-me/xxx', type: 'code' },
+            { id: 'gitea', name: 'Gitea', icon: '🍵', prefix: 'gitea', base: 'https://gitea.com', placeholder: 'gitea/gitea', type: 'code' },
+            { id: 'codeberg', name: 'Codeberg', icon: '⛰️', prefix: 'codeberg', base: 'https://codeberg.org', placeholder: 'forgejo/forgejo', type: 'code' },
+            { id: 'sf', name: 'SourceForge', icon: '🔧', prefix: 'sf', base: 'https://sourceforge.net', placeholder: 'projects/sevenzip', type: 'code' },
+            { id: 'aosp', name: 'AOSP', icon: '🤖', prefix: 'aosp', base: 'https://android.googlesource.com', placeholder: 'platform/frameworks/base', type: 'code' },
+            
+            // AI/模型
+            { id: 'hf', name: 'Hugging Face', icon: '🤗', prefix: 'hf', base: 'https://huggingface.co', placeholder: 'bert-base-uncased', type: 'ai' },
+            { id: 'civitai', name: 'Civitai', icon: '🎨', prefix: 'civitai', base: 'https://civitai.com', placeholder: 'api/download/models/128713', type: 'ai' },
+            
+            // 容器镜像
+            { id: 'cr-docker', name: 'Docker Hub', icon: '🐳', prefix: 'cr/docker', base: 'https://registry-1.docker.io', placeholder: 'library/nginx', type: 'docker' },
+            { id: 'cr-ghcr', name: 'GHCR', icon: '📦', prefix: 'cr/ghcr', base: 'https://ghcr.io', placeholder: 'owner/image', type: 'docker' },
+            { id: 'cr-gcr', name: 'GCR', icon: '☁️', prefix: 'cr/gcr', base: 'https://gcr.io', placeholder: 'distroless/base', type: 'docker' },
+            { id: 'cr-mcr', name: 'MCR', icon: '🪟', prefix: 'cr/mcr', base: 'https://mcr.microsoft.com', placeholder: 'dotnet/runtime', type: 'docker' },
+            { id: 'cr-quay', name: 'Quay', icon: '⚓', prefix: 'cr/quay', base: 'https://quay.io', placeholder: 'coreos/etcd', type: 'docker' },
+            { id: 'cr-k8s', name: 'K8s', icon: '☸️', prefix: 'cr/k8s', base: 'https://registry.k8s.io', placeholder: 'pause', type: 'docker' },
+            
+            // 包管理器
+            { id: 'npm', name: 'npm', icon: '📦', prefix: 'npm', base: 'https://registry.npmjs.org', placeholder: 'react', type: 'package' },
+            { id: 'pypi', name: 'PyPI', icon: '🐍', prefix: 'pypi', base: 'https://pypi.org', placeholder: 'packages/source/r/requests', type: 'package' },
+            { id: 'conda', name: 'conda', icon: '🐍', prefix: 'conda', base: 'https://repo.anaconda.com', placeholder: 'pkgs/main/linux-64', type: 'package' },
+            { id: 'maven', name: 'Maven', icon: '☕', prefix: 'maven', base: 'https://repo1.maven.org', placeholder: 'maven2/org/springframework', type: 'package' },
+            { id: 'gradle', name: 'Gradle', icon: '🐘', prefix: 'gradle', base: 'https://plugins.gradle.org', placeholder: 'm2/org/gradle', type: 'package' },
+            { id: 'golang', name: 'Go Modules', icon: '🐹', prefix: 'golang', base: 'https://proxy.golang.org', placeholder: 'github.com/gin-gonic/gin', type: 'package' },
+            { id: 'crates', name: 'Crates.io', icon: '🦀', prefix: 'crates', base: 'https://crates.io', placeholder: 'api/v1/crates/serde', type: 'package' },
+            { id: 'rubygems', name: 'RubyGems', icon: '💎', prefix: 'rubygems', base: 'https://rubygems.org', placeholder: 'gems/rails', type: 'package' },
+            
+            // AI API
+            { id: 'ip-openai', name: 'OpenAI', icon: '🧠', prefix: 'ip/openai', base: 'https://api.openai.com', placeholder: 'v1/chat/completions', type: 'ai-api' },
+            { id: 'ip-anthropic', name: 'Anthropic', icon: '🔮', prefix: 'ip/anthropic', base: 'https://api.anthropic.com', placeholder: 'v1/messages', type: 'ai-api' },
+            { id: 'ip-gemini', name: 'Gemini', icon: '✨', prefix: 'ip/gemini', base: 'https://generativelanguage.googleapis.com', placeholder: 'v1beta/models', type: 'ai-api' },
+            { id: 'ip-cohere', name: 'Cohere', icon: '🔗', prefix: 'ip/cohere', base: 'https://api.cohere.ai', placeholder: 'v1/chat', type: 'ai-api' },
+            { id: 'ip-mistral', name: 'Mistral', icon: '🌪️', prefix: 'ip/mistralai', base: 'https://api.mistral.ai', placeholder: 'v1/chat/completions', type: 'ai-api' },
+            
+            // 其他
+            { id: 'apache', name: 'Apache', icon: '🦅', prefix: 'apache', base: 'https://downloads.apache.org', placeholder: 'kafka/3.6.1', type: 'other' },
+            { id: 'homebrew', name: 'Homebrew', icon: '🍺', prefix: 'homebrew', base: 'https://github.com/Homebrew', placeholder: 'homebrew-core.git', type: 'other' },
+            { id: 'arxiv', name: 'arXiv', icon: '📄', prefix: 'arxiv', base: 'https://arxiv.org', placeholder: 'pdf/2301.07041.pdf', type: 'other' },
+            { id: 'jenkins', name: 'Jenkins', icon: '🔴', prefix: 'jenkins', base: 'https://updates.jenkins.io', placeholder: 'download/plugins/git', type: 'other' },
+            { id: 'custom', name: '自定义URL', icon: '🔗', prefix: '', base: '', placeholder: 'https://example.com/resource', type: 'custom' }
+        ];
+
+        // ========== 状态 ==========
+        let currentPlatform = PLATFORMS[0];
+        let useShortFormat = true;
+        let currentAcceleratedUrl = '';
+        let selectedHistoryItems = new Set();
 
         // ========== 初始化 ==========
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            renderPlatforms();
             bindEvents();
             renderHistory();
         });
 
-        // ========== 主题管理 ==========
+        // ========== 主题 ==========
         function initTheme() {
-            const savedTheme = localStorage.getItem('xget_theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeIcon(savedTheme);
+            const saved = localStorage.getItem(THEME_KEY) || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateThemeIcon(saved);
         }
 
         function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('xget_theme', newTheme);
-            updateThemeIcon(newTheme);
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem(THEME_KEY, next);
+            updateThemeIcon(next);
         }
 
         function updateThemeIcon(theme) {
             document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
         }
 
-        // ========== 事件绑定 ==========
-        function bindEvents() {
-            // 平台标签页切换
-            document.querySelectorAll('.platform-tab').forEach(tab => {
-                tab.addEventListener('click', () => switchPlatform(tab));
-            });
+        // ========== 渲染平台按钮 ==========
+        function renderPlatforms() {
+            const grid = document.getElementById('platformGrid');
+            grid.innerHTML = PLATFORMS.map(p => `
+                <button class="platform-btn ${p.id === currentPlatform.id ? 'active' : ''}" 
+                        data-id="${p.id}" title="${p.name}">
+                    <span class="platform-icon">${p.icon}</span>
+                    <span>${p.name}</span>
+                </button>
+            `).join('');
 
-            // 生成按钮
-            document.getElementById('generateBtn').addEventListener('click', generateUrl);
-            
-            // 清空按钮
-            document.getElementById('clearBtn').addEventListener('click', clearInput);
-            
-            // 复制按钮
-            document.getElementById('copyBtn').addEventListener('click', copyUrl);
-            
-            // 二维码按钮
-            document.getElementById('qrBtn').addEventListener('click', toggleQRCode);
-            
-            // 清空历史
-            document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
-            
-            // 回车生成
-            document.getElementById('resourceInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') generateUrl();
+            // 绑定点击事件
+            grid.querySelectorAll('.platform-btn').forEach(btn => {
+                btn.addEventListener('click', () => selectPlatform(btn.dataset.id));
             });
-
-            // 主题切换
-            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         }
 
-        // ========== 平台切换 ==========
-        function switchPlatform(tab) {
-            // 更新标签页状态
-            document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            // 更新当前平台信息
-            currentPlatform = tab.dataset.platform;
-            currentBaseUrl = tab.dataset.base;
-
-            // 更新输入框提示
-            const inputLabel = document.getElementById('inputLabel');
-            const input = document.getElementById('resourceInput');
+        // ========== 选择平台 ==========
+        function selectPlatform(platformId) {
+            currentPlatform = PLATFORMS.find(p => p.id === platformId);
             
-            if (currentPlatform === 'gh') {
-                inputLabel.textContent = '输入 GitHub 仓库路径（如：xixu-me/Xget）';
-                input.placeholder = '例如：xixu-me/Xget';
-            } else if (currentPlatform === 'gl') {
-                inputLabel.textContent = '输入 GitLab 仓库路径（如：gitlab-com/gitlab-com-infrastructure）';
-                input.placeholder = '例如：gitlab-com/gitlab-com-infrastructure';
-            } else if (currentPlatform === 'hf') {
-                inputLabel.textContent = '输入 Hugging Face 模型路径（如：bert-base-uncased）';
-                input.placeholder = '例如：bert-base-uncased';
-            } else {
-                inputLabel.textContent = '输入完整的目标资源 URL';
-                input.placeholder = '例如：https://github.com/xixu-me/Xget';
-            }
+            // 更新UI
+            document.querySelectorAll('.platform-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.id === platformId);
+            });
 
-            // 清空输入和结果
-            clearInput();
+            // 更新输入框
+            const input = document.getElementById('resourceInput');
+            const label = document.getElementById('inputLabel');
+            
+            label.innerHTML = `输入 <strong>${currentPlatform.name}</strong> 资源路径`;
+            input.placeholder = `例如：${currentPlatform.placeholder}`;
+            input.value = '';
+            
+            // 清空结果
+            document.getElementById('resultGroup').classList.remove('show');
         }
 
         // ========== 生成加速链接 ==========
         function generateUrl() {
             const input = document.getElementById('resourceInput').value.trim();
             if (!input) {
-                alert('请输入需要加速的资源路径或URL');
+                alert('请输入资源路径');
                 return;
             }
 
             let acceleratedUrl = '';
-
-            if (currentPlatform === 'custom') {
-                // 自定义URL：直接拼接
+            
+            if (currentPlatform.type === 'custom') {
+                // 自定义URL
                 let url = input;
                 if (!url.startsWith('http://') && !url.startsWith('https://')) {
                     url = 'https://' + url;
                 }
                 acceleratedUrl = `${BASE_DOMAIN}/${url}`;
-            } else {
-                // 平台短前缀：/gh/ /gl/ /hf/
+            } else if (useShortFormat && currentPlatform.prefix) {
+                // 短前缀格式
                 let path = input;
-                // 如果用户输入了完整URL，提取路径
+                // 如果输入了完整URL，提取路径
                 if (path.startsWith('http://') || path.startsWith('https://')) {
                     try {
-                        const parsedUrl = new URL(path);
-                        path = parsedUrl.pathname;
+                        const u = new URL(path);
+                        path = u.pathname;
                         if (path.startsWith('/')) path = path.substring(1);
-                    } catch (e) {
-                        // 解析失败，直接用原输入
-                    }
+                    } catch(e) {}
                 }
-                // 去掉开头的斜杠
                 if (path.startsWith('/')) path = path.substring(1);
-                acceleratedUrl = `${BASE_DOMAIN}/${currentPlatform}/${path}`;
+                acceleratedUrl = `${BASE_DOMAIN}/${currentPlatform.prefix}/${path}`;
+            } else {
+                // 完整URL格式
+                let url = input;
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = `${currentPlatform.base}/${url}`;
+                }
+                acceleratedUrl = `${BASE_DOMAIN}/${url}`;
             }
 
+            currentAcceleratedUrl = acceleratedUrl;
+            
             // 显示结果
             document.getElementById('acceleratedUrl').value = acceleratedUrl;
             document.getElementById('resultGroup').classList.add('show');
-            document.getElementById('qrSection').style.display = 'none';
-            document.getElementById('qrcode').innerHTML = '';
-
+            
+            // 生成快捷操作
+            renderQuickActions();
+            
             // 保存历史
             saveHistory(input, acceleratedUrl);
         }
 
-        // ========== 历史记录管理 ==========
+        // ========== 渲染快捷操作 ==========
+        function renderQuickActions() {
+            const container = document.getElementById('quickActions');
+            let actions = [];
+
+            // 基础操作
+            actions.push({ text: '📋 复制链接', action: copyUrl });
+            actions.push({ text: '🔗 一键打开', action: openUrl });
+
+            // 根据平台类型添加特定操作
+            if (currentPlatform.type === 'code') {
+                actions.push({ text: '📦 复制 Git Clone', action: copyGitClone });
+            }
+            if (currentPlatform.type === 'docker') {
+                actions.push({ text: '🐳 复制 Pull 命令', action: copyDockerPull });
+            }
+            if (currentPlatform.type === 'package') {
+                if (currentPlatform.id === 'pypi') {
+                    actions.push({ text: '🐍 复制 pip 配置', action: copyPipConfig });
+                }
+                if (currentPlatform.id === 'npm') {
+                    actions.push({ text: '📦 复制 npm 配置', action: copyNpmConfig });
+                }
+            }
+            if (currentPlatform.type === 'ai-api') {
+                actions.push({ text: '🧠 复制 Base URL', action: copyBaseUrl });
+            }
+
+            container.innerHTML = actions.map((a, i) => `
+                <button class="action-btn" data-index="${i}">${a.text}</button>
+            `).join('');
+
+            // 绑定事件
+            container.querySelectorAll('.action-btn').forEach((btn, i) => {
+                btn.addEventListener('click', () => {
+                    actions[i].action();
+                    btn.classList.add('success');
+                    setTimeout(() => btn.classList.remove('success'), 1000);
+                });
+            });
+        }
+
+        // ========== 快捷操作函数 ==========
+        function copyUrl() {
+            copyToClipboard(currentAcceleratedUrl);
+        }
+
+        function openUrl() {
+            window.open(currentAcceleratedUrl, '_blank');
+        }
+
+        function copyGitClone() {
+            copyToClipboard(`git clone ${currentAcceleratedUrl}`);
+        }
+
+        function copyDockerPull() {
+            // 提取镜像名
+            let imageName = currentPlatform.placeholder;
+            const input = document.getElementById('resourceInput').value.trim();
+            if (input) imageName = input;
+            copyToClipboard(`docker pull ${BASE_DOMAIN.replace('https://', '')}/${currentPlatform.prefix}/${imageName}`);
+        }
+
+        function copyPipConfig() {
+            copyToClipboard(`pip config set global.index-url ${BASE_DOMAIN}/pypi/simple/`);
+        }
+
+        function copyNpmConfig() {
+            copyToClipboard(`npm config set registry ${BASE_DOMAIN}/npm/`);
+        }
+
+        function copyBaseUrl() {
+            copyToClipboard(`${BASE_DOMAIN}/${currentPlatform.prefix}`);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已复制到剪贴板');
+            }).catch(() => {
+                // 降级方案
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('已复制到剪贴板');
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+                background: var(--primary); color: white; padding: 0.8rem 1.5rem;
+                border-radius: 8px; z-index: 9999; animation: fadeIn 0.3s;
+            `;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        // ========== 历史记录 ==========
         function saveHistory(origin, accelerated) {
             let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            // 去重：如果已存在相同记录，移到顶部
-            history = history.filter(item => item.accelerated !== accelerated);
+            // 去重
+            history = history.filter(h => h.accelerated !== accelerated);
             history.unshift({
+                id: Date.now(),
                 origin: origin,
                 accelerated: accelerated,
-                platform: currentPlatform,
+                platform: currentPlatform.id,
+                platformName: currentPlatform.name,
+                platformIcon: currentPlatform.icon,
                 time: new Date().toLocaleString()
             });
-            // 限制数量
             history = history.slice(0, MAX_HISTORY);
             localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
             renderHistory();
         }
 
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            const listEl = document.getElementById('historyList');
+        function renderHistory(filter = '') {
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            
+            // 搜索过滤
+            if (filter) {
+                history = history.filter(h => 
+                    h.origin.toLowerCase().includes(filter.toLowerCase()) ||
+                    h.accelerated.toLowerCase().includes(filter.toLowerCase()) ||
+                    h.platformName.toLowerCase().includes(filter.toLowerCase())
+                );
+            }
 
+            const list = document.getElementById('historyList');
+            
             if (history.length === 0) {
-                listEl.innerHTML = '<div class="empty-history">暂无生成记录</div>';
+                list.innerHTML = '<div class="empty-history">暂无生成记录</div>';
                 return;
             }
 
-            listEl.innerHTML = history.map((item, index) => `
+            list.innerHTML = history.map(h => `
                 <div class="history-item">
+                    <input type="checkbox" class="history-checkbox" 
+                           data-id="${h.id}" ${selectedHistoryItems.has(h.id) ? 'checked' : ''}>
                     <div class="history-content">
-                        <div class="history-url">${item.accelerated}</div>
+                        <div class="history-url">${h.accelerated}</div>
                         <div class="history-meta">
-                            原始：${item.origin} | ${item.time}
+                            <span>${h.platformIcon} ${h.platformName}</span>
+                            <span>原始: ${h.origin}</span>
+                            <span>${h.time}</span>
                         </div>
                     </div>
                     <div class="history-actions">
-                        <button class="btn-icon" onclick="copyHistoryUrl(${index})">复制</button>
-                        <button class="btn-icon" onclick="deleteHistoryItem(${index})">删除</button>
+                        <button class="mini-btn" onclick="copyHistoryItem('${h.accelerated}')">复制</button>
+                        <button class="mini-btn" onclick="openHistoryItem('${h.accelerated}')">打开</button>
+                        <button class="mini-btn" onclick="deleteHistoryItem(${h.id})" style="color: var(--danger); border-color: var(--danger);">删除</button>
                     </div>
                 </div>
             `).join('');
-        }
 
-        function copyHistoryUrl(index) {
-            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            if (history[index]) {
-                navigator.clipboard.writeText(history[index].accelerated).then(() => {
-                    alert('链接已复制到剪贴板');
+            // 绑定复选框事件
+            list.querySelectorAll('.history-checkbox').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    if (cb.checked) {
+                        selectedHistoryItems.add(Number(cb.dataset.id));
+                    } else {
+                        selectedHistoryItems.delete(Number(cb.dataset.id));
+                    }
                 });
-            }
+            });
         }
 
-        function deleteHistoryItem(index) {
+        function copyHistoryItem(url) {
+            copyToClipboard(url);
+        }
+
+        function openHistoryItem(url) {
+            window.open(url, '_blank');
+        }
+
+        function deleteHistoryItem(id) {
             let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            history.splice(index, 1);
+            history = history.filter(h => h.id !== id);
+            selectedHistoryItems.delete(id);
             localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-            renderHistory();
+            renderHistory(document.getElementById('searchHistory').value);
+        }
+
+        // ========== 批量操作 ==========
+        function selectAllHistory() {
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            const checkboxes = document.querySelectorAll('.history-checkbox');
+            
+            const allSelected = checkboxes.length > 0 && checkboxes.length === selectedHistoryItems.size;
+            
+            if (allSelected) {
+                selectedHistoryItems.clear();
+            } else {
+                history.forEach(h => selectedHistoryItems.add(h.id));
+            }
+            
+            renderHistory(document.getElementById('searchHistory').value);
+        }
+
+        function batchCopy() {
+            if (selectedHistoryItems.size === 0) {
+                alert('请先选择要复制的记录');
+                return;
+            }
+            
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            const selected = history.filter(h => selectedHistoryItems.has(h.id));
+            const text = selected.map(h => h.accelerated).join('\n');
+            copyToClipboard(text);
         }
 
         function clearHistory() {
-            if (confirm('确定要清空所有生成历史吗？')) {
+            if (confirm('确定要清空所有历史记录吗？')) {
                 localStorage.removeItem(HISTORY_KEY);
+                selectedHistoryItems.clear();
                 renderHistory();
             }
         }
 
-        // ========== 辅助功能 ==========
-        function clearInput() {
-            document.getElementById('resourceInput').value = '';
-            document.getElementById('resultGroup').classList.remove('show');
-            document.getElementById('qrSection').style.display = 'none';
-            document.getElementById('qrcode').innerHTML = '';
-        }
-
-        function copyUrl() {
-            const input = document.getElementById('acceleratedUrl');
-            input.select();
-            document.execCommand('copy');
-            alert('链接已复制到剪贴板');
-        }
-
-        function toggleQRCode() {
-            const qrSection = document.getElementById('qrSection');
-            const qrCodeEl = document.getElementById('qrcode');
-            const url = document.getElementById('acceleratedUrl').value;
-
-            if (qrSection.style.display === 'none') {
-                // 生成二维码
-                qrCodeEl.innerHTML = '';
-                QRCode.toCanvas(document.createElement('canvas'), url, { width: 180, margin: 2 }, (error, canvas) => {
-                    if (error) {
-                        console.error(error);
-                        alert('二维码生成失败');
-                        return;
-                    }
-                    qrCodeEl.appendChild(canvas);
-                    qrSection.style.display = 'block';
-                });
-            } else {
-                qrSection.style.display = 'none';
+        function exportHistory() {
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            if (history.length === 0) {
+                alert('暂无历史记录可导出');
+                return;
             }
+            
+            const blob = new Blob([JSON.stringify(history, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `xget-history-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ========== 事件绑定 ==========
+        function bindEvents() {
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('generateBtn').addEventListener('click', generateUrl);
+            document.getElementById('clearBtn').addEventListener('click', () => {
+                document.getElementById('resourceInput').value = '';
+                document.getElementById('resultGroup').classList.remove('show');
+            });
+            document.getElementById('formatToggle').addEventListener('click', () => {
+                useShortFormat = !useShortFormat;
+                document.getElementById('formatToggle').textContent = useShortFormat ? '使用完整格式' : '使用短前缀';
+            });
+            document.getElementById('resourceInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') generateUrl();
+            });
+            document.getElementById('searchHistory').addEventListener('input', (e) => {
+                renderHistory(e.target.value);
+            });
+            document.getElementById('selectAllBtn').addEventListener('click', selectAllHistory);
+            document.getElementById('batchCopyBtn').addEventListener('click', batchCopy);
+            document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
+            document.getElementById('exportHistory').addEventListener('click', exportHistory);
         }
     </script>
 </body>
