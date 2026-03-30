@@ -68,9 +68,34 @@ export async function handleRequest(request, env, ctx) {
       addSecurityHeaders(headers);
       response = new Response('{}', { status: 200, headers });
     }
-    // Redirect root path or invalid platforms to GitHub repository
+    // ========== 核心修改：拦截根路径，返回自定义首页（不再跳转作者仓库） ==========
     else if (url.pathname === '/' || url.pathname === '') {
-      response = createHomepageRedirect();
+      // 尝试从静态资源中读取 index.html
+      if (env.ASSETS) {
+        const indexRequest = new Request(new URL('/index.html', request.url));
+        const indexResponse = await env.ASSETS.fetch(indexRequest);
+        
+        if (indexResponse.ok) {
+          response = new Response(indexResponse.body, {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8',
+              'Cache-Control': 'no-cache'
+            }
+          });
+        } else {
+          // 如果读取不到 index.html，返回简单的提示
+          response = new Response('Xget 加速服务已启动，请输入需要加速的 URL', {
+            status: 200,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+          });
+        }
+      } else {
+        // 兜底：返回简单提示
+        response = new Response('Xget 加速服务已启动，请输入需要加速的 URL', {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
+      }
     } else {
       const validation = validateRequest(request, url, config, requestContext);
       if (!validation.valid) {
